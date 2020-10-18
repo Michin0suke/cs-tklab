@@ -1,7 +1,3 @@
-* [←システムの構造](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system1.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [ログインシステム→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system3.html)
-
 # システム制作
 
 ------
@@ -92,11 +88,11 @@
 
 
 
-------
+```sql
+create table member (id integer primary key auto_increment, name text, pass_word text, mail text);
 
-* [←システムの構造](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system1.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [ログインシステム→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system3.html)
+create table larning (id integer primary key auto_increment, member integer, name text, file text, change_name text, created date);
 
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.
+create table task (id integer primary key auto_increment, member integer, name text, file text, change_name text, word text, modified date);
+```
+

@@ -1,6 +1,3 @@
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [データベース構造→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system2.html)
-
 # システム制作
 
 ------
@@ -63,11 +60,3 @@ Webアプリケーションに限らず，実用的なシステムを作ると�
 以上が全体の構想となります。
 
 以降では，これまでに作成したプログラムと区別するために`htdocs`に新しいフォルダ`challenge`を作り，そこに全てのHTMLファイル，PHPスクリプトを作り込んでいきましょう。
-
-------
-
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [データベース構造→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system2.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

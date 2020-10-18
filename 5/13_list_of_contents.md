@@ -1,7 +1,3 @@
-* [←提出課題の内容変更](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system11.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [システムの改良→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system13.html)
-
 # 全体の提出内容の表示
 
 ------
@@ -14,7 +10,79 @@
 
 PHPスクリプト： submission.php
 
-[![img](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/submission_php_common.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/submission_php_common.png)
+```php
+<?php
+session_start();
+require('common/common.php');
+
+// ログインしているかのチェック
+login_check($member, $db);
+
+// ページの取得
+$sql = sprintf('SELECT * FROM task ORDER BY id ASC');
+$recordSet = mysqli_query($db, $sql) or die(mysqli_error($db));
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>全体の提出状況</title>
+    <style>
+        #red { color: red; }
+    </style>
+</head>
+<body>
+    <h1>確認ページ</h1>
+    <hr>
+    <p>現在までの提出状況</p>
+    <?php
+$i = 1;
+while($table = mysqli_fetch_assoc($recordSet)) {
+    $sql = 'SELECT * FROM member WHERE id = '.mysqli_real_escape_string($db, $table['member']);
+    $record = mysqli_query($db, $sql) or die(mysqli_error($db));
+    $member = mysqli_fetch_assoc($record);
+    ?>
+        <table border="1">
+            <tr>
+                <th width="20">
+                    <?=$i?>
+                </th>
+                <th colspan="3">
+                    <?=htmlspecialchars($table['name'], ENT_QUOTES, 'utf-8')?>
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    提出者: <?=htmlspecialchars($member['name'])?>
+                </td>
+                <td width="180">
+                    <a href="task_folder/<?=htmlspecialchars($table['change_name'], ENT_QUOTES, 'utf-8')?>">
+                        <?=htmlspecialchars($table['file'], ENT_QUOTES, 'utf-8')?>
+                    </a>
+                </td>
+                <td width="80">
+                    <?=htmlspecialchars($table['modified'], ENT_QUOTES, 'utf-8')?>
+                </td>
+            </tr>
+            <tr>
+                <td width="50">
+                    コメント
+                </td>
+                <td colspan="3">
+                    <?=htmlspecialchars($table['word'], ENT_QUOTES, 'utf-8')?>
+                </td>
+            </tr>
+        </table>
+    <?php
+$i++;
+}
+    ?>
+<p><a href="top_page.php">トップに戻る</a></p>
+<a href="logout.php">ログアウト</a>
+</body>
+</html>
+```
 
 
 
@@ -48,15 +116,4 @@ SQL文だけで上記のような複数テーブルを組み合わせたテー�
 
 
 
-[![img](13_list_of_contents.assets/system12-4.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/system12-4.png)
-
-
-
-------
-
-* [←提出課題の内容変更](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system11.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [システムの改良→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system13.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.
+[![img](13_list_of_contents.assets/system12-4.png)

@@ -1,7 +1,3 @@
-* [←データベース構造](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system2.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [ユーザー登録（入力）→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system4.html)
-
 # ログインシステム
 
 ------
@@ -14,7 +10,65 @@
 
 PHPスクリプト：index.php
 
-[![img](03_login.assets/system3-2.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/system3-2.PNG)
+```php
+<?php
+require('dbconnect.php');
+
+session_start();
+
+if(!empty($_POST)) {
+    if($_POST['username'] != '' && $_POST['pass_word'] != '') {
+        $sql = sprintf('SELECT * FROM member WHERE name = "%s" AND pass_word = "%s"',
+            mysqli_real_escape_string($db, $_POST['username']),
+            mysqli_real_escape_string($db, $_POST['pass_word'])
+        );
+        $record = mysqli_query($db, $sql) or dir(mysqli_error($db));
+
+        if($table = mysqli_fetch_assoc($record)) {
+            $_SESSION['id'] = $table['id'];
+            $_SESSION['time'] = $time;
+
+            header('Location: top_page.php');
+            exit();
+        } else {
+            $error['login'] = 'failed';
+        }
+    } else {
+        $error['login'] = 'blank';
+    }
+}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ログイン画面</title>
+</head>
+<body>
+<h1>ログイン画面</h1>
+<hr>
+<form action="" method="post">
+    <label>
+        ユーザーネーム: <br>
+        <input type="text" name="username" size="30" maxlength="255">
+    </label>
+    <br>
+    <label>
+        パスワード: <br>
+        <input type="text" name="pass_word" size="30" maxlength="255">
+    </label>
+    <br>
+    <input type="submit" value="ログイン">
+    <input type="reset" value="リセット">
+    <br>
+</form>
+<?php if(!empty($error)): ?>
+    <p>入力が空・もしくは入力が間違っています(<?=implode(', ', array_keys($error))?>)</p>
+<?php endif ?>
+<p>登録されていない場合は<a href="entry.php">ココ</a>から登録できます</p>
+</body>
+</html>
+```
 
 
 
@@ -66,19 +120,15 @@ URLの表記として，末端がスラッシュ(`/`)で終了する文字列で
 
 このようなURL指定の場合，Webサーバは対応する自身のフォルダ（ディレクトリ）に存在する特定の名前のファイル，あるいは，スクリプトを呼び出して処理を行います。これを**インデックスファイル(index file)**と呼び，例えばXAMPP for WindowsのApacheでは，設定ファイル(httpd.conf)の中で`DirectoryIndex`オプションとして次のようにインデックスファイル名を指定しています。
 
+```
 <IfModule dir_module>
 DirectoryIndex `index.php index.pl index.cgi index.asp index.shtml index.html index.htm \default.php default.pl default.cgi default.asp default.shtml default.html default.htm \home.php home.pl home.cgi home.asp home.shtml home.html home.htm`
 </IfModule>
+```
+
+
 
 この並びの順に，もしそのディレクトリに(1)`index.php`(PHPスクリプト)があればまずこれを最初に呼び出し，存在していなければ(2)`index.pl`(Perlスクリプト)を，なければ(3)`index.asp`を・・・というようにインデックスファイルを探して処理を行います。`index.html`は6番目にありますので，これもインデックスファイルの一つになります。
 
 本システムのように，どんなアクセスに対しても真っ先に呼び出すべきファイルやスクリプトのファイル名は，このインデックスファイルになり得るものにしておいて下さい。
 
-------
-
-* [←データベース構造](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system2.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [ユーザー登録（入力）→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system4.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

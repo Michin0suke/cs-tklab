@@ -1,7 +1,3 @@
-* [←トップページとログインの継続](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system6.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [教材管理システム→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system8.html)
-
 # ログアウト
 
 ------
@@ -18,7 +14,24 @@
 
 PHPスクリプト：logout.php
 
-[![img](07_logout.assets/system7-2.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/system7-2.PNG)
+```php
+<?php
+session_start();
+session_unset();
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ログアウト</title>
+</head>
+<body>
+    <p>ログアウトが実行されました。</p>
+    <p><a href="index.php">ログインページへ</a></p>
+</body>
+</html>
+```
 
 
 
@@ -32,15 +45,12 @@ PHPスクリプト：logout.php
 
 表示を省略したlogout.php
 
-[![img](07_logout.assets/system7-3.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/system7-3.PNG)
+```php
+<?php
+session_start();
+session_unset();
+header('Location: index.php');
+```
 
 
 
-------
-
-* [←トップページとログインの継続](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system6.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [教材管理システム→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system8.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

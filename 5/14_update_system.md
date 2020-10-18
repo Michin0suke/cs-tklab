@@ -1,7 +1,3 @@
-* [←全体提出状況の表示](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system12.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [AjaxとファイルのDrag & Drop処理→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/file_upload_javascript.html)
-
 # システムの改良
 
 ------
@@ -27,6 +23,59 @@
 
 common/common.php
 
+```php
+<?php
+// -----------
+// 共通ファイル
+// -----------
+
+// データベース関連
+$db = mysqli_connect('localhost', 'root', 'secret', 'test_db') or die('MySQLサーバに接続できませんでした。');
+mysqli_set_charset($db, 'utf8');
+
+// 管理者ID
+    $admin_name = "admin";
+    $admin_id = '';
+
+    if($admin_id === ''){
+        $sql = "SELECT id FROM member WHERE name = '$admin_name'";
+        $record = mysqli_query($db, $sql) or die(mysqli_error($db));
+        $data = mysqli_fetch_assoc($record);
+        $admin_id = $data['id'];
+    }
+
+// 関数群
+function login_check(&$member, $db) {
+    if(isset($_SESSION['id']) && $_SESSION['time'] + 3600 > time()) {
+        // ログイン状態
+        $_SESSION['time'];
+        $sql = 'SELECT * FROM member WHERE id = '.mysqli_real_escape_string($db, $_SESSION['id']);
+        $record = mysqli_query($db, $sql) or die(mysqli_error($db));
+        $member = mysqli_fetch_assoc($record);
+    } else {
+        // ログインしていない場合
+        header('Location: index.php');
+        exit();
+
+        //return login_failed
+    }
+}
+
+function sanitize($db, $input) {
+    return mysqli_real_escape_string($db, htmlspecialchars($input, ENT_QUOTES));
+}
+
+// 管理者かどうか
+function admin_check($admin_id) {
+    if(isset($_SESSION['id']) && $_SESSION['id'] === $admin_id)
+        return TRUE;
+    else
+        return FALSE;
+}
+```
+
+
+
 [![img](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/common_php_admin_ckeck.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/commom_php_admin_check.png)
 
 
@@ -35,7 +84,38 @@ common/common.php
 
 top_page.phpの一部
 
-[![img](14_update_system.assets/top_page_php_admin_check.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/top_page_php_admin_check.png)
+```php
+<?php
+session_start();
+require('common/common.php');
+// ログインしているかのチェック
+login_check($member, $db);
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>トップページ</title>
+</head>
+<body>
+    <h1>チャレンジ最終問題</h1>
+    <hr>
+    <p>ログインユーザー: <?=htmlspecialchars($member['name'])?></p>
+    <ul>
+        <li><a href="learning.php">学習用教材リンク</a></li>
+        <li><a href="task.php">課題提出リンク</a></li>
+        <?php if(admin_check($admin_id)): // 管理者のみ?>
+            <li><a href="submission.php">全体の提出状況</a></li>
+        <?php endif ?>
+    </ul>
+    <hr>
+    <a href="logout.php">ログアウト</a>
+</body>
+</html>
+```
+
+
 
 
 
@@ -47,13 +127,123 @@ top_page.phpの一部
 
 learning.phpの一部(1/2)
 
-[![img](14_update_system.assets/learning_php_admin_check_10-53.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/learning_php_admin_check_10-53.png)
+```php
+<?php
+session_start();
+require('common/common.php');
+
+// ログインしているかのチェック
+login_check($member, $db);
+
+// 管理者のみ登録可
+if(admin_check($admin_id)) {
+    if(!empty($_POST)) {
+        // 拡張子判別
+        $file = mb_convert_kana($_FILES['learning']['name'], 'a', 'UTF-8');
+        if(preg_match("/\.\w{4}\z/", $file))
+            $ext = substr($file, -5);
+        else if (preg_match("/\.\w{3}\z/", $file))
+            $ext = substr($file, -4);
+
+        // 登録処理
+        if(!empty($_POST['file_name']) && !empty($_FILES['learning']['name'])) {
+            $sql = sprintf('INSERT INTO learning SET member=%d, name="%s", file="%s", change_name="%s", created="%s"',
+                sanitize($db, $member['id']),
+                sanitize($db, $_POST['file_name']),
+                sanitize($db, $_FILES['learning']['name']),
+                sanitize($db, $_SESSION['change_name'].$ext),
+                sanitize($db, date("Y-m-d"))
+            );
+            mysqli_query($db, $sql) or die(mysqli_error($db));
+
+            // ファイル登録
+            $filepath = './learning_folder/'.htmlspecialchars($_SESSION['change_name'], ENT_QUOTES);
+            move_uploaded_file($_FILES['learning']['tmp_name'], $filepath.$ext);
+        } else {
+            $error['learning'] = 'blank';
+        }
+    }
+}
+
+// ページの取得
+$sql = 'SELECT * FROM learning ORDER BY id ASC';
+$recordSet = mysqli_query($db, $sql) or die(mysqli_error($db));
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>教材管理ページ</title>
+    <style>
+        #red { color: red; }
+    </style>
+</head>
+<body>
+    <h1>教材管理ページ</h1>
+    <p>ログインユーザ: <?=htmlspecialchars($member['name'], ENT_QUOTES)?></p>
+    <hr>
+    <p>公開されている情報</p>
+    <?php
+        $i = 1;
+        while($tables = mysqli_fetch_assoc($recordSet)) {
+    ?>
+    <table border="1">
+            <tr>
+                <th width="20"><?=$i?></th>
+                <th colspan="3"><?=htmlspecialchars($tables['name'], ENT_QUOTES, 'utf-8')?></th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <a href="learning_folder/<?=htmlspecialchars($tables['change_name'], ENT_QUOTES, 'utf-8')?>">
+                        <?=htmlspecialchars($tables['file'], ENT_QUOTES, 'utf-8')?>
+                    </a>
+                </td>
+                <td width="180">公開日時: <?=htmlspecialchars($tables['created'], ENT_QUOTES, 'utf-8')?></td>
+                <?php if(admin_check($admin_id)): ?>
+                    <td width="40">
+                        <a href="delete.php?id=<?=$tables['id']?>">消去</a>
+                    </td>
+                <?php endif ?>
+            </tr>
+    </table>
+    <br>
+    <?php
+$i++;
+}
+$_SESSION['change_name'] = $i . "-" . date("Ymd");
+if ($i == 1) echo '<p>登録されている情報はありません</p>';
+
+// 管理者のみ登録可
+if(admin_check($admin_id)):
+    ?>
+    <hr>
+    <form method="post" enctype="multipart/form-data">
+        <p>アップロードファイルの選択: </p>
+        <table border="1">
+            <tr><th>題名</th><td><input type="text" name="file_name" size="30"></td></tr>
+            <tr><th>file</th><td><input type="file" name="learning" size="50"></td></tr>
+        </table>
+        <?php
+            if(!empty($error['learning']) && $error['learning'] === 'blank') {
+                var_dump($error);
+                echo '<p id="red">※題名とファイルを確実に選択してください。</p>';
+            }
+        ?>
+        <input type="submit" value="アップロード">
+    </form>
+    <?php
+endif
+    ?>
+    <hr>
+    <p><a href="top_page.php">トップに戻る</a></p>
+    <a href="logout.php">ログアウト</a>
+</body>
+</html>
+
+```
 
 
-
-learning.phpの一部(2/2)
-
-[![img](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/learning_php_admin_check_78-119.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/learning_php_admin_check_78-119.png)
 
 
 
@@ -89,7 +279,52 @@ entry.phpの変更箇所
 
 check.phpの変更箇所
 
-[![img](14_update_system.assets/check_php_encrypted.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/check_php_encrypted.png)
+```php
+<?php
+session_start();
+require('common/common.php');
+
+if(!isset($_SESSION['join'])) {
+    header('Location: entry.php');
+    exit();
+}
+
+$sql = sprintf('SELECT count(*) FROM member WHERE name="%s"',
+    sanitize($db, $_SESSION['join']['name'])
+);
+$record = mysqli_query($db, $sql) or die(mysqli_error($db));
+$data = mysqli_fetch_row($record);
+if($data[0] > 0) {
+    echo "<p>その名前(".$_SESSION['join']['name'].")はすでに使用されています。別名で登録してください。</p>";
+} else {
+    $encrypted_password = password_hash($_SESSION['join']['pass_word'], PASSWORD_DEFAULT);
+    $sql = sprintf('INSERT INTO member SET name="%s", pass_word="%s", mail="%s"',
+        sanitize($db, $_SESSION['join']['name']),
+        sanitize($db, $encrypted_password),
+        sanitize($db, $_SESSION['join']['mail'])
+    );
+    mysqli_query($db, $sql) or die(mysqli_error($db));
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ログイン情報チェック</title>
+</head>
+<p>以下の情報で登録されました。</p>
+<ul>
+    <li><b>Name: </b><?=$_SESSION['join']['name']?></li>
+    <li><b>Password: パスワードは忘れないようにしてください！！</b></li>
+    <li><b>Mail: </b><?=$_SESSION['join']['mail']?></li>
+</ul>
+<?php unset($_SESSION['join']) ?>
+<a href="index.php">ログイン画面</a>
+</html>
+```
+
+
 
 
 
@@ -118,12 +353,3 @@ index.phpの変更箇所
 
 
 うまくログインできるようでしたら，既存ユーザーの情報は全てmemberテーブルから消去し，すべてのユーザーが暗号化パスワードになるように登録し直しましょう。
-
-------
-
-* [←全体提出状況の表示](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system12.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [AjaxとファイルのDrag & Drop処理→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/file_upload_javascript.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

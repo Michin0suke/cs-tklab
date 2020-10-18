@@ -1,7 +1,3 @@
-* [←システムの改良](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system13.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [練習問題→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/lesson_javascript.html)
-
 # AjaxとファイルのDrag & Drop処理
 
 ------
@@ -14,7 +10,50 @@
 
 file_api.html
 
-[![img](15_ajax_drag_and_drop.assets/file_api_html.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/file_api_html.png)
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>File API confirmation</title>
+    <style>
+        #drop { border: solid 1px; }
+    </style>
+</head>
+<body>
+    <h1>ファイルAPI</h1>
+    <div id="drop" ondragover="onDragOver(event)" ondrop="onDrop(event)">
+        ここが<br>
+        Dropエリア
+    </div>
+    <p>以下にファイル属性を表示</p>
+    <p id="disp"></p>
+    <p><a href="./">戻る</a></p>
+
+    <script>
+        if(File){
+            // File APIに関する処理をここに書く
+            alert('File API使用可能！');
+        } else {
+            alert('このブラウザではFile APIが使えません。');
+        }
+        var drop = document.getElementById('drop');
+        var disp = document.getElementById('disp');
+        function onDragOver(e) {
+            event.preventDefault();
+        }
+        function onDrop(e) {
+            var files = e.dataTransfer.files;
+            disp.innerHTML = '';
+            for(var i = 0; i < files.length; i++) {
+                disp.innerHTML += `ファイル名: ${files[i].name}<br>`
+            }
+            event.preventDefault();
+        }
+    </script>
+</body>
+</html>
+```
 
 
 
@@ -51,6 +90,8 @@ Ajax(Asyncronus JavaScript + XML)とは，非同期のHTTP通信を可能とす�
 下記はファイルのアップロードをDrag & Dropだけで実行するためのHTML+JavaScript, PHPスクリプトです。
 
 file_api_upload.html
+
+
 
 [![img](15_ajax_drag_and_drop.assets/file_api_upload_html.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/file_api_upload_html.png)
 
@@ -115,12 +156,3 @@ file_api_upload_jquery.html
 [![img](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/file_api_upload_jquery_html.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/file_api_upload_jquery_html.png)
 
 
-
-------
-
-* [←システムの改良](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system13.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [練習問題→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/lesson_javascript.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

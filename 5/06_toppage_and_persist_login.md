@@ -1,7 +1,3 @@
-* [←ユーザー登録（登録）](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system5.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [ログアウト→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system7.html)
-
 # トップページとログインの継続: top_page.php
 
 ------
@@ -20,7 +16,45 @@
 
 PHPスクリプト: top_page.php
 
-[![img](06_toppage_and_persist_login.assets/system6-2.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/system6-2.PNG)
+```php
+<?php
+session_start();
+require('dbconnect.php');
+
+if (isset($_SESSION['id']) && $_SESSION['time'] + 3600 > time()) {
+    // ログイン状態
+    $_SESSION['time'] = time();
+
+    $sql = 'SELECT * FROM member WHERE id = '.sanitize($db, $_SESSION['id']);
+    $record = mysqli_query($db, $sql) or die(mysqli_error($db));
+    $member = mysqli_fetch_assoc($record);
+} else {
+    // ログインしていない
+    header('Location: index.php');
+    exit();
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>トップページ</title>
+</head>
+<body>
+    <h1>チャレンジ最終問題</h1>
+    <hr>
+    <p>ログインユーザー: <?=htmlspecialchars($member['name'])?></p>
+    <ul>
+        <li><a href="learning.php">学習用教材リンク</a></li>
+        <li><a href="task.php">課題提出リンク</a></li>
+        <li><a href="submission.php">全体の提出状況</a></li>
+    </ul>
+    <hr>
+    <a href="logout.php">ログアウト</a>
+</body>
+</html>
+```
 
 
 
@@ -69,12 +103,3 @@ PHPスクリプト: top_page.php
 [![img](06_toppage_and_persist_login.assets/system6-5.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/system6-5.PNG)
 
 
-
-------
-
-* [←ユーザー登録（登録）](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system5.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [ログアウト→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system7.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

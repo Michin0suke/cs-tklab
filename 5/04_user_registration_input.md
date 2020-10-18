@@ -1,7 +1,3 @@
-* [←ログインシステム](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system3.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [ユーザー登録（登録）→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system5.html)
-
 # ユーザー登録（入力）
 
 ------
@@ -12,7 +8,72 @@
 
 PHPスクリプト: entry.php
 
-[![img](04_user_registration_input.assets/system4-2.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/system4-2.PNG)
+```php
+<?php
+require('dbconnect.php');
+session_start();
+
+// エラー判定
+if(!empty($_POST)) {
+
+    if($_POST['name'] !== '' && $_POST['mail'] !== '' && $_POST['pass_word'] !== '') {
+        if(strlen($_POST['pass_word']) < 4) {
+            $error['entry'] = 'password';
+        } else {
+            $_SESSION['join'] = $_POST;
+            header('Location: check.php');
+            exit();
+        }
+    } else {
+        $error['entry'] = 'blank';
+    }
+
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>登録画面</title>
+    <style>
+        #red { color: red; }
+    </style>
+</head>
+<body>
+<form method="post">
+    <table>
+        <caption>ユーザ登録</caption>
+        <tr><th>Name</th><td><input type="text" name="name" size="40" maxlength="255"></td></tr>
+        <tr><th>Password</th><td><input type="password" name="pass_word" size="40" maxlength="255"></td></tr>
+        <tr><th>Mail</th><td><input type="text" name="mail" size="40" maxlength="255"></td></tr>
+    </table>
+<?php if(!empty($error['entry'])): ?>
+    <?php
+        switch($error['entry']):
+        case 'empty':
+    ?>
+        <p>正しく入力されています。</p>
+        <?php break; ?>
+    <?php case 'blank': ?>
+        <p id="red">※入力欄に空白が存在します。</p>
+        <?php break; ?>
+    <?php case 'password': ?>
+        <p id="red">※パスワードに入力されている文字数が4に達していません。</p>
+        <?php break; ?>
+    <?php default: ?>
+        <?php // ここなに？ ?>
+        <p id="red">※空欄がある場合の登録は無効です。</p>
+        <p id="red">※パスワードに入力されている文字数が4に達していません。</p>
+    <?php endswitch;?>
+<?php endif ?>
+<input type="submit" value="submit">
+<input type="reset" value="reset">
+</form>
+</body>
+</html>
+
+```
 
 
 
@@ -67,12 +128,3 @@ PHPスクリプト: entry.php
 ![img](04_user_registration_input.assets/system4-5.PNG)
 
 
-
-------
-
-* [←ログインシステム](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system3.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [ユーザー登録（登録）→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system5.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

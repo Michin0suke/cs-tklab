@@ -1,7 +1,3 @@
-* [←課題提出システム](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system10.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [全体の提出内容の表示→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system12.html)
-
 # 提出課題の内容変更
 
 ------
@@ -24,7 +20,106 @@
 
 PHPスクリプト：change.php
 
-[![img](12_change_contents.assets/change_php_common.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/change_php_common.png)
+```php
+<?php
+session_start();
+require('common/common.php');
+
+// ログインチェック
+login_check($member, $db);
+
+$messages = [];
+
+if(!empty($_POST)) {
+    if(!empty($_FILES)) {
+        // 拡張子判別
+        $messages[] = 'ファイル更新';
+        $file = mb_convert_kana($_FILES['file']['name'], 'a', 'UTF-8');
+
+        if(preg_match("/\.\w{4}\z/", $file))
+            $ext = substr($file, -5);
+        else if (preg_match("/\.\w{3}\z/", $file))
+            $ext = substr($file, -4);
+
+        $sql = sprintf('UPDATE task SET file="%s", change_name="%s", modified="%s" WHERE id=%d',
+            sanitize($db, $_FILES['file']['name']),
+            sanitize($db, $_SESSION['chan'].$ext),
+            sanitize($db, date('Y-m-d')),
+            sanitize($db, $_SESSION['task'])
+        );
+        mysqli_query($db, $sql) or die(mysqli_error($db));
+
+        // ファイル登録
+        $filepath = './task_folder/'.$_SESSION['chan'].$ext;
+        move_uploaded_file($_FILES['file']['tmp_name'], $filepath);
+        $messages[] = 'ファイル更新終了';
+    } else {
+        $messages[] = 'データ更新';
+        $sql = sprintf('UPDATE task SET name="%s", word="%s", modified="%s" WHERE id=%d',
+            sanitize($db, $_POST['name']),
+            sanitize($db, $_POST['word']),
+            sanitize($db, date('Y-m-d')),
+            sanitize($db, $_SESSION['task'])
+        );
+        mysqli_query($db, $sql) or die(mysqli_error($db));
+    }
+    $error['task'] = 'blank';
+}
+
+// 投稿を取得する
+if (isset($_REQUEST['id'])) {
+    $_SESSION['task'] = $_REQUEST['id'];
+    $_SESSION['chan'] = "exc".$_SESSION['task'];
+
+    $sql = 'SELECT * FROM task WHERE id = '.sanitize($db, $_SESSION['task']);
+    $record = mysqli_query($db, $sql) or die(mysqli_error($db));
+    $table = mysqli_fetch_assoc($record);
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>課題の編集</title>
+</head>
+<body>
+    <?=implode('<br>', $messages)?>
+    <?php if($table['id'] == $_REQUEST['id']): ?>
+        <h2>編集欄</h2>
+        <form method="post">
+            <table border="1">
+                <tr>
+                    <th>題名</th>
+                    <td colspan="3">
+                        <input type="text" name="name" value="<?=htmlspecialchars($table['name'], ENT_QUOTES)?>" size="80">
+                    </td>
+                </tr>
+                <tr>
+                    <th>コメント</th>
+                    <td colspan="3">
+                        <textarea name="word" cols="80" rows="5"><?=htmlspecialchars($table['word'], ENT_QUOTES)?></textarea>
+                    </td>
+                </tr>
+            </table>
+            <input type="hidden" name="file_update" value="yes">
+            <input type="submit" value="変更する">
+        </form>
+        <form method="post" enctype="multipart/form-data">
+            <p>登録済ファイル: <?=htmlspecialchars($table['file'], ENT_QUOTES)?></p>
+            <p>変更ファイル: <input type="file" name="file"></p>
+            <input type="hidden" name="file_update" value="yes">
+            <br>
+            <input type="submit" value="変更する">
+        </form>
+    <?php endif ?>
+    <hr>
+    <a href="task.php">←課題提出ページ</a>
+</body>
+</html>
+```
+
+
 
 
 
@@ -68,11 +163,3 @@ PHPスクリプト：change.php
 
 このファイル名変更の仕様については改善の余地があります。「別に同じファイル名でも上書きすればいいじゃないか」と考える人は，そのようにこの`change.php`を書き換えてみて下さい。
 
-------
-
-* [←課題提出システム](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system10.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [全体の提出内容の表示→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system12.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

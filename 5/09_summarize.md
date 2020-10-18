@@ -1,7 +1,3 @@
-* [←教材管理システム](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system8.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [教材の消去→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system9.html)
-
 # 共通する機能をまとめる
 
 ------
@@ -14,7 +10,39 @@
 
 common/common.php
 
-[![img](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/common_php.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/common_php.png)
+```php
+<?php
+// -----------
+// 共通ファイル
+// -----------
+
+// データベース関連
+$db = mysqli_connect('localhost', 'root', '', 'test_db') or die('MySQLサーバに接続できませんでした。');
+mysqli_set_charset($db, 'utf8');
+
+// 関数群
+function login_check(&$member, $db) {
+    if(isset($_SESSION['id']) && $_SESSION['time'] + 3600 > time()) {
+        // ログイン状態
+        $_SESSION['time'];
+        $sql = 'SELECT * FROM member WHERE id = '.mysqli_real_escape_string($db, $_SESSION['id']);
+        $record = mysqli_query($db, $sql) or die(mysqli_error($db));
+        $member = mysqli_fetch_assoc($record);
+    } else {
+        // ログインしていない場合
+        header('Location: index.php');
+        exit();
+
+        //return login_failed
+    }
+}
+
+function sanitize($db, $input) {
+    return mysqli_real_escape_string($db, htmlspecialchars($input, ENT_QUOTES));
+}
+```
+
+
 
 
 
@@ -46,11 +74,145 @@ common/common.php
 
 #### top_page.php
 
-[![img](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/top_page_php_common.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/top_page_php_common.png)
+```php
+<?php
+session_start();
+require('common/common.php');
+
+// ログインしているかのチェック
+login_check($member, $db);
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>トップページ</title>
+</head>
+<body>
+    <h1>チャレンジ最終問題</h1>
+    <hr>
+    <p>ログインユーザー: <?=htmlspecialchars($member['name'])?></p>
+    <ul>
+        <li><a href="learning.php">学習用教材リンク</a></li>
+        <li><a href="task.php">課題提出リンク</a></li>
+        <li><a href="submission.php">全体の提出状況</a></li>
+    </ul>
+    <hr>
+    <a href="logout.php">ログアウト</a>
+</body>
+</html>
+```
+
+
 
 #### learning.php
 
-[![img](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/learning_php_common.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/learning_php_common.png)
+```php
+<?php
+session_start();
+require('common/common.php');
+
+// ログインしているかのチェック
+login_check($member, $db);
+
+if(!empty($_POST)) {
+    // 拡張子判別
+    $file = mb_convert_kana($_FILES['learning']['name'], 'a', 'UTF-8');
+    if(preg_match("/\.\w{4}\z/", $file))
+        $ext = substr($file, -5);
+    else if (preg_match("/\.\w{3}\z/", $file))
+        $ext = substr($file, -4);
+
+    // 登録処理
+    if(!empty($_POST['file_name']) && !empty($_FILES['learning']['name'])) {
+        $sql = sprintf('INSERT INTO learning SET member=%d, name="%s", file="%s", change_name="%s", created="%s"',
+            sanitize($db, $member['id']),
+            sanitize($db, $_POST['file_name']),
+            sanitize($db, $_FILES['learning']['name']),
+            sanitize($db, $_SESSION['change_name'].$ext),
+            sanitize($db, date("Y-m-d"))
+        );
+        mysqli_query($db, $sql) or die(mysqli_error($db));
+
+        // ファイル登録
+        $filepath = './learning_folder/'.htmlspecialchars($_SESSION['change_name'], ENT_QUOTES);
+        move_uploaded_file($_FILES['learning']['tmp_name'], $filepath.$ext);
+    } else {
+        $error['learning'] = 'blank';
+    }
+}
+
+// ページの取得
+$sql = 'SELECT * FROM learning ORDER BY id ASC';
+$recordSet = mysqli_query($db, $sql) or die(mysqli_error($db));
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>教材管理ページ</title>
+    <style>
+        #red { color: red; }
+    </style>
+</head>
+<body>
+    <h1>教材管理ページ</h1>
+    <p>ログインユーザ: <?=htmlspecialchars($member['name'], ENT_QUOTES)?></p>
+    <hr>
+    <p>公開されている情報</p>
+    <?php
+        $i = 1;
+        while($tables = mysqli_fetch_assoc($recordSet)) {
+    ?>
+    <table border="1">
+            <tr>
+                <th width="20"><?=$i?></th>
+                <th colspan="3"><?=htmlspecialchars($tables['name'], ENT_QUOTES, 'utf-8')?></th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <a href="learning_folder/<?=htmlspecialchars($tables['change_name'], ENT_QUOTES, 'utf-8')?>">
+                        <?=htmlspecialchars($tables['file'], ENT_QUOTES, 'utf-8')?>
+                    </a>
+                </td>
+                <td width="180">公開日時: <?=htmlspecialchars($tables['created'], ENT_QUOTES, 'utf-8')?></td>
+                <td width="40">
+                    <a href="delete.php?id=<?=$tables['id']?>">消去</a>
+                </td>
+            </tr>
+    </table>
+    <br>
+    <?php
+        $i++;
+        }
+        $_SESSION['change_name'] = $i . "-" . date("Ymd");
+        if ($i == 1) echo '<p>登録されている情報はありません</p>';
+    ?>
+    <hr>
+    <form method="post" enctype="multipart/form-data">
+        <p>アップロードファイルの選択: </p>
+        <table border="1">
+            <tr><th>題名</th><td><input type="text" name="file_name" size="30"></td></tr>
+            <tr><th>file</th><td><input type="file" name="learning" size="50"></td></tr>
+        </table>
+        <?php
+            if(!empty($error['learning']) && $error['learning'] === 'blank') {
+                var_dump($error);
+                echo '<p id="red">※題名とファイルを確実に選択してください。</p>';
+            }
+        ?>
+        <input type="submit" value="アップロード">
+    </form>
+    <hr>
+    <p><a href="top_page.php">トップに戻る</a></p>
+    <a href="logout.php">ログアウト</a>
+</body>
+</html>
+```
+
+
 
 ## セキュリティの確保
 
@@ -73,6 +235,16 @@ common/common.php
 
 Apacheの設定にもよりますが，ユーザー側で追加のアクセス制限をかける時には，同じフォルダに`.htaccess`というテキストファイルを作成し，指定したファイル・フォルダのアクセスを制限することができます。例えば`common/common.php`を外部からアクセスできないようにするためには`.htaccess`を
 
+```
+<Files ~ "^common.php$">
+	deny from all
+</Files>
+<Files ~ "^\.(htaccess|htpasswd)$">
+	deny from all
+</Files>
+order deny,allow
+```
+
 
 
 [![img](09_summarize.assets/htaccess.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/htaccess.png)
@@ -84,12 +256,3 @@ Apacheの設定にもよりますが，ユーザー側で追加のアクセス�
 [![img](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/htaccess_deny.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/htaccess_deny.png)
 
 と出れば制限されていることが確認できます。
-
-------
-
-* [←教材管理システム](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system8.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [教材の消去→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system9.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

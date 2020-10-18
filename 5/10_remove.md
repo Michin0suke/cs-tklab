@@ -1,7 +1,3 @@
-* [←共通する機能をまとめる](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system85.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [課題提出システム→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system10.html)
-
 # 教材の消去
 
 ------
@@ -12,7 +8,30 @@
 
 PHPスクリプト: delete.php
 
-[![img](10_remove.assets/delete_php_common.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/delete_php_common.png)
+```php
+<?php
+    session_start();
+    require('common/common.php');
+
+    // ログインチェック
+    login_check($member, $db);
+
+    if (isset($_REQUEST['id'])) {
+        $id = $_REQUEST['id'];
+
+        //投稿を検査する
+        $sql = 'SELECT * FROM learning WHERE id = '.sanitize($db, $id);
+        $record = mysqli_query($db, $sql) or die(mysqli_error($db));
+        $table = mysqli_fetch_assoc($record);
+        if ($table['id'] == $_REQUEST['id']) {
+            // 消去
+            $sql = 'DELETE FROM learning WHERE id = '.sanitize($db, $id);
+            mysqli_query($db, $sql) or die(mysqli_error($db));
+        }
+    }
+    header('Location: learning.php');
+    exit();
+```
 
 
 
@@ -26,11 +45,3 @@ PHPスクリプト: delete.php
 
 削除はいったん実行してしまうと取り返しがつきません。できれば実行前に「削除します。よろしいですか？」という確認のためのメッセージを出すようにプログラミングしましょう。
 
-------
-
-* [←共通する機能をまとめる](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system85.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [課題提出システム→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system10.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

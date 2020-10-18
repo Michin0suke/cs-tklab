@@ -1,7 +1,3 @@
-* [←ユーザー登録（入力）](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system4.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [トップページとログインの継続→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system6.html)
-
 # ユーザー登録（登録）
 
 ------
@@ -20,7 +16,40 @@
 
 PHPスクリプト：check.php
 
-[![img](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/check_old.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/check_old.png)
+```php
+<?php
+session_start();
+require('dbconnect.php');
+
+if(!isset($_SESSION['join'])) {
+    header('Location: entry.php');
+    exit();
+}
+
+$sql = sprintf('INSERT INTO member SET name="%s", pass_word="%s", mail="%s"',
+    sanitize($db, $_SESSION['join']['name']),
+    sanitize($db, $_SESSION['join']['pass_word']),
+    sanitize($db, $_SESSION['join']['mail'])
+);
+mysqli_query($db, $sql) or die(mysqli_error($db));
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ログイン情報チェック</title>
+</head>
+<p>以下の情報で登録されました。</p>
+<ul>
+    <li><b>Name: </b><?=$_SESSION['join']['name']?></li>
+    <li><b>Password: </b><?=$_SESSION['join']['pass_word']?></li>
+    <li><b>Mail: </b><?=$_SESSION['join']['mail']?></li>
+</ul>
+<?php unset($_SESSION['join']) ?>
+<a href="index.php">ログイン画面</a>
+</html>
+```
 
 
 
@@ -76,14 +105,3 @@ check.phpの改良箇所
 
 
 のように表示され，登録ができないようになっている筈です。
-
-
-
-------
-
-* [←ユーザー登録（入力）](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system4.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [トップページとログインの継続→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system6.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

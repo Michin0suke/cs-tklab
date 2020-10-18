@@ -1,7 +1,3 @@
-* [←教材の消去](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system9.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [提出課題の内容変更→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system11.html)
-
 # 課題提出システム
 
 ------
@@ -14,7 +10,114 @@
 
 PHPスクリプト：task.php
 
-[![img](11_description_submission_system.assets/task_php_common.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/task_php_common.png)
+```php
+<?php
+
+session_start();
+require('common/common.php');
+
+// ログインチェック
+login_check($member, $db);
+
+if(!empty($_POST)) {
+    // 拡張子判別
+    $file = mb_convert_kana($_FILES['task']['name'], 'a', 'UTF-8');
+    if(preg_match("/\.\w{4}\z/", $file))
+        $ext = substr($file, -5);
+    else if (preg_match("/\.\w{3}\z/", $file))
+        $ext = substr($file, -4);
+
+    // 登録処理
+    if(!empty($_POST['file_name']) && !empty($_FILES['task']['name'])) {
+        $sql = sprintf('INSERT INTO task SET member=%d, name="%s", file="%s", change_name="%s", word="%s", modified="%s"',
+            sanitize($db, $member['id']),
+            sanitize($db, $_POST['file_name']),
+            sanitize($db, $_FILES['task']['name']),
+            sanitize($db, $_SESSION['change_name'].$ext),
+            sanitize($db, $_POST['word']),
+            date("Y-m-d")
+        );
+        mysqli_query($db, $sql) or die(mysqli_error($db));
+
+        // ファイル登録
+        $filepath = './task_folder/'.htmlspecialchars($_SESSION['change_name'], ENT_QUOTES);
+        move_uploaded_file($_FILES['task']['tmp_name'], $filepath.$ext);
+    } else {
+        $error['task'] = 'blank';
+    }
+}
+
+// ページの取得
+$sql = 'SELECT * FROM task WHERE member="'.sanitize($db, $member['id']).'" ORDER BY id ASC';
+$recordSet = mysqli_query($db, $sql) or die(mysqli_error($db));
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>課題提出ページ</title>
+    <style>
+        #red { color: red; }
+    </style>
+</head>
+<body>
+    <h1>課題提出ページ</h1>
+    <hr>
+    <p>ログインユーザー: <?=htmlspecialchars($member['name'], ENT_QUOTES)?></p>
+    <hr>
+    <form method="post" enctype="multipart/form-data">
+        <p>アップロードファイルの選択:</p>
+        <table border="1">
+            <tr><th>題名</th><td><input type="text" name="file_name" size="50"></td></tr>
+            <tr><th>file</th><td><input type="file" name="task" size="50"></td></tr>
+            <tr><th>コメント</th><td><textarea name="word" cols="50" rows="5"></textarea></td></tr>
+        </table>
+        <?php if(!empty($error['task']) && $error['task'] == 'blank'): ?>
+            <p id="red">※題名とファイルを確実に選択してください。</p>
+        <?php endif ?>
+        <input type="submit" value="アップロード">
+    </form>
+    <hr>
+    <p>課題提出状況</p>
+    <?php
+        $i = 1;
+        while($tables = mysqli_fetch_assoc($recordSet)) {
+    ?>
+    <table border="1">
+            <tr>
+                <th width="20"><?=$i?></th>
+                <th colspan="3"><?=htmlspecialchars($tables['name'], ENT_QUOTES, 'utf-8')?></th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    ファイル名: <?=htmlspecialchars($tables['file'], ENT_QUOTES, 'utf-8')?>
+                </td>
+                <td width="180">
+                    更新日時: <?=htmlspecialchars($tables['modified'], ENT_QUOTES, 'utf-8')?>
+                </td>
+                <td width="40">
+                    <a href="change.php?id=<?=$tables['id']?>">変更</a>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <?=htmlspecialchars($tables['word'], ENT_QUOTES, 'utf-8')?>
+                </td>
+            </tr>
+    </table>
+    <br>
+    <?php
+        $i++;
+        }
+        $_SESSION['change_name'] = $i . "-" . date("Ymd");
+        if ($i == 1) echo '<p>現在までに提出した課題はありません。</p>';
+    ?>
+    <hr>
+    <p><a href="top_page.php">トップに戻る</a></p>
+    <a href="logout.php">ログアウト</a>
+</body>
+</html>
+```
 
 
 
@@ -51,12 +154,3 @@ PHPスクリプトの43～48行目の内容がその部分にあたり，`member
 [![img](11_description_submission_system.assets/task_php_common_l43-l48.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter5/fig/task_php_common_l43-l48.png)
 
 
-
-------
-
-* [←教材の消去](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system9.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [提出課題の内容変更→](http://cs-tklab.na-inet.jp/phpdb/Chapter5/system11.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.
