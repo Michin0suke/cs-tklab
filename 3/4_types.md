@@ -1,7 +1,3 @@
-* [←テーブルの作成:CREATE](http://cs-tklab.na-inet.jp/phpdb/Chapter3/DB3.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [データの挿入・変更・消去・検索→](http://cs-tklab.na-inet.jp/phpdb/Chapter3/DB5.html)
-
 # データ型
 
 ------
@@ -57,14 +53,3 @@
 | DATETIME(日付，時間） | 1000/01/01 00：00：00～9999/12/31 23：59：59 |
 | DATE（日付のみ）      | 1000/01/01～9999/12/31                       |
 | TIME（時間のみ）      | 00：00：00～23：59：59                       |
-
-
-
-------
-
-* [←テーブルの作成:CREATE](http://cs-tklab.na-inet.jp/phpdb/Chapter3/DB3.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [データの挿入・変更・消去・検索→](http://cs-tklab.na-inet.jp/phpdb/Chapter3/DB5.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

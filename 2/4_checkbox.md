@@ -1,7 +1,3 @@
-* [←フォーム入力の受け取り](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP3.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [PHPによるフォームの生成→](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP5.html)
-
 # ファイルメニューとチェックボックス入力の受け取り
 
 ------
@@ -26,7 +22,23 @@
 
 HTMLファイル：filemenu.html
 
-[![img](4_checkbox.assets/filemenu_html.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/filemenu_html.png)
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ファイルメニューサンプル(複数ファイル受け取り対応版)</title>
+</head>
+<body>
+  <form id="fileform" action="filemenu.php" method="post" enctype="multipart/form-data">
+    送信ファイルの選択: <input id="fileinput" type="file" name="sample"><br>
+    <input type="submit" value="submit">
+    <input type="reset" value="reset">
+  </form>
+  <p><a href="index.html">go back</a></p>
+</body>
+</html>
+```
 
 
 
@@ -64,7 +76,27 @@ HTMLファイル：filemenu.html
 
 PHPスクリプト：filemenu.php
 
-[![img](4_checkbox.assets/filemenu_php.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/filemenu_php.png)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ファイル情報受け取り</title>
+</head>
+<body>
+    <h1>ファイル情報受け取り</h1>
+    <?php $file = $_FILES['sample']; ?>
+    <p>name: <?=$file['name']?></p>
+    <p>type: <?=$file['type']?></p>
+    <p>error <?=$file['error']?></p>
+    <p>size <?=$file['size']?></p>
+    <p>tmp_name <?=$file['tmp_name']?></p>
+    <p><a href="filemenu.html">return to form</a></p>
+</body>
+</html>
+```
+
+
 
 
 
@@ -80,7 +112,33 @@ PHPスクリプト：filemenu.php
 
 プログラム：filemenu.php
 
-[![img](4_checkbox.assets/filemenu2_php.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/filemenu2_php.png)
+
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ファイル情報受け取り</title>
+</head>
+<body>
+    <h1>ファイル情報受け取り</h1>
+    <?php
+        $file = $_FILES['sample'];
+        // 一時ファイルをカレントディレクトリに移動
+        move_uploaded_file($file['tmp_name'], './'.$file['name']);
+    ?>
+    <p>name: <?=$file['name']?></p>
+    <p>type: <?=$file['type']?></p>
+    <p>error <?=$file['error']?></p>
+    <p>size <?=$file['size']?></p>
+    <p>tmp_name <?=$file['tmp_name']?></p>
+    <!-- 画像ファイルは正常に閲覧できるはず -->
+    <img src=<?=$file['name']?>>
+    <p><a href="filemenu.html">return to form</a></p>
+</body>
+</html>
+```
 
 
 
@@ -104,7 +162,28 @@ PHPスクリプト：filemenu.php
 
 プログラム：checkbox.html
 
-[![img](4_checkbox.assets/PHP4-3.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/PHP4-3.PNG)
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ファイルメニューサンプル(複数ファイル受け取り対応版)</title>
+</head>
+<body>
+  <form action="checkbox.php" method="post">
+    <p>複数個選択してください。</p>
+    <label><input type="checkbox" name="sample[]" value="Red">Red</label>
+    <label><input type="checkbox" name="sample[]" value="Blue">Blue</label>
+    <label><input type="checkbox" name="sample[]" value="Green">Green</label>
+    <label><input type="checkbox" name="sample[]" value="Yellow">Yellow</label>
+    <label><input type="checkbox" name="sample[]" value="Black">Black</label>
+    <br>
+    <input type="submit" value="submit">
+    <input type="reset" value="reset">
+  </form>
+</body>
+</html>
+```
 
 
 
@@ -116,7 +195,20 @@ PHPスクリプト：filemenu.php
 
 プログラム：checkbox.php
 
-[![img](4_checkbox.assets/PHP4-4.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/PHP4-4.PNG)
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>チェックボックス受け取り</title>
+</head>
+<body>
+    <p>選択した色は<?=htmlspecialchars(implode(', ', $_POST['sample']))?>です。</p>
+</body>
+</html>
+```
+
+
 
 
 
@@ -148,17 +240,86 @@ PHPスクリプト：filemenu.php
 
 ここに例示したHTMLではキー値を1, 2, ...に指定していますが，PHPの配列の添字として使用できる文字列を指定することも可能です。
 
-HTMLファイル(フォーム部のみ抜粋): checkbox_table.html
+HTMLファイル(フォーム部のみ抜粋): checkbox_table1.php
 
-[![img](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/checkbox_table_html.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/checkbox_table_html.png)
+```php
+<?php
+    $data = [
+        ['item'=>'ホワイトチョコレート', 'area'=>'北海道'],
+        ['item'=>'きりたんぽ', 'area'=>'秋田県'],
+        ['item'=>'牛タン', 'area'=>'宮城県(仙台)'],
+        ['item'=>'雪おこし', 'area'=>'東京都'],
+        ['item'=>'深蒸し茶', 'area'=>'静岡県(遠州地方)']
+    ];
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>チェックボックスとテーブル(フォーム)</title>
+</head>
+<body>
+  <h1>チェックボックスとテーブル(フォーム)</h1>
+  <p>テーブルの項目を複数選んでください。</p>
+  <form action="checkbox_table2.php" method="post">
+    <table style="border: thin double;">
+      <caption>インデックスを指定したテーブルとチェックボックスの例</caption>
+      <thead>
+        <tr><th>選択(番号)</th><th>品物</th><th>産地</th></tr>
+      </thead>
+      <tbody>
+        <?php foreach($data as $i => $d) { ?>
+            <tr>
+                <td><label><input type="checkbox" name="index[<?=$i?>]" value="<?=$i?>">(<?=$i?>)</label></td>
+                <td><?=$d['item']?></td><input type="hidden" name="items[<?=$i?>]" value="<?=$d['item']?>">
+                <td><?=$d['area']?></td><input type="hidden" name="area[<?=$i?>]" value="<?=$d['area']?>">
+            </tr>
+        <?php } ?>
+      </tbody>
+      <tfoot>
+          <tr>
+              <td colspan="3">
+                  <input type="submit" value="submit">
+                  <input type="reset" value="reset">
+              </td>
+          </tr>
+      </tfoot>
+    </table>
+  </form>
+</body>
+</html>
+```
 
 
 
 さすれば，受信する側のPHPスクリプトでは，この大かっこ付きのname属性を与えられたinputタグの値が，配列として`$_POST['index']`, `$_POST['items']`, `$_POST['area']`に渡されます。キー値(`$key`)も共通ですので，これを使って他の配列の値を取り出すこともできるようになっています。
 
-PHPスクリプト: checkbox_table.php
+PHPスクリプト: checkbox_table2.php
 
-[![img](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/checkbox_table_php.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/checkbox_table_php.png)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>チェックボックスとテーブル(受信)</title>
+</head>
+<body>
+  <h1>チェックボックスとテーブル(受信)</h1>
+  <p>テーブルの項目を複数選んでください。</p>
+  <span>選択した項目は</span>
+    <?php foreach($_POST['index'] as $index) { ?>
+        <p>
+            <?=htmlspecialchars($index, ENT_QUOTES)?>
+            <?=htmlspecialchars($_POST['items'][$index], ENT_QUOTES)?>
+            <?=htmlspecialchars($_POST['area'][$index], ENT_QUOTES)?>
+        </p>
+    <?php } ?>
+    <span>です。</span>
+  </p>
+  <p><a href="checkbox_table1.html">フォームに戻る</a></p>
+</body>
+</html>
+```
 
 
 
@@ -179,12 +340,3 @@ PHPスクリプト: checkbox_table.php
 
 
 submitボタンが押された結果，上記のように表示されれば，複数項目を一気に受信できたことが分かります。
-
-------
-
-* [←フォーム入力の受け取り](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP3.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [PHPによるフォームの生成→](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP5.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

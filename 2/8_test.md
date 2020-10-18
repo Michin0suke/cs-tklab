@@ -1,7 +1,3 @@
-* [←セッション](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP7.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [解答例→](http://cs-tklab.na-inet.jp/phpdb/Chapter2/lesson2-A.html)
-
 # 練習問題
 
 ------
@@ -24,36 +20,29 @@
 
 分からないところは最初からあきらめずに自分で調べましょう。 どこを見ればいいか分からないときは下のヒントを見ましょう。
 
-[ヒント(別窓で開きます)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP3.html)
 
-------
-
-* [←セッション](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP7.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [解答例→](http://cs-tklab.na-inet.jp/phpdb/Chapter2/lesson2-A.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.
-
-
-
-* [←問題へ戻る](http://cs-tklab.na-inet.jp/phpdb/Chapter2/lesson2.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
 
 # 解答例
 
 ------
 
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>受け取り</title>
+</head>
+<body>
+    <p>name: <?=htmlspecialchars($_REQUEST['name'], ENT_QUOTES)?></p>
+    <p>sex: <?=htmlspecialchars($_REQUEST['sex'], ENT_QUOTES)?></p>
+    <p>color: <?=htmlspecialchars($_REQUEST['color'], ENT_QUOTES)?></p>
+    <p>pref: <?=htmlspecialchars($_REQUEST['pref'], ENT_QUOTES)?></p>
+    <p>comments: <?=htmlspecialchars($_REQUEST['comments'], ENT_QUOTES)?></p>
+</body>
+</html>
+```
 
 
-[![img](8_test.assets/lesson2-A.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/lesson2-A.PNG)
 
 
-
-------
-
-* [←問題へ戻る](http://cs-tklab.na-inet.jp/phpdb/Chapter2/lesson2.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

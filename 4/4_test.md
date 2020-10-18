@@ -1,7 +1,3 @@
-* [←データベース接続の共通化](http://cs-tklab.na-inet.jp/phpdb/Chapter4/link3.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [解答例→](http://cs-tklab.na-inet.jp/phpdb/Chapter4/lesson4-A.html)
-
 # 練習問題
 
 ------
@@ -20,46 +16,84 @@ phpMyAdmin画面[![img](4_test.assets/lesson4-3.PNG)](http://cs-tklab.na-inet.jp
 
 分からないところは最初からあきらめずに自分で調べましょう。どこを見ればいいか分からないときは下のヒントを見ましょう。
 
-[ヒント(別窓で開きます)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/link2.html)
-
-このプログラムが完成したら，データベースの中身を表示するプログラムを作成してみましょう。
-
-------
-
-* [←データベース接続の共通化](http://cs-tklab.na-inet.jp/phpdb/Chapter4/link3.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [解答例→](http://cs-tklab.na-inet.jp/phpdb/Chapter4/lesson4-A.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.
-
-
-
-
-
-* [←問題へ戻る](http://cs-tklab.na-inet.jp/phpdb/Chapter4/lesson4.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-
 # 解答例
 
 ------
 
-HTMLファイル
+送信元PHPファイル
 
-[![img](4_test.assets/lesson4-A-1.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/lesson4-A-1.PNG)
+```php
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>登録ページ</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <h1>登録ページ</h1>
+        <form>
+            <table border="1">
+                <tr><th>氏名</th><td><input name="name"></td></tr>
+                <tr><th>性別</th><td>
+                    <input type="radio" name="sex" value="男">男
+                    <input type="radio" name="sex" value="女">女
+                </td></tr>
+                <tr><th>好きな色</th><td>
+                    <input type="radio" name="color" value="赤">赤
+                    <input type="radio" name="color" value="青">青
+                    <input type="radio" name="color" value="緑">緑
+                    <input type="radio" name="clor" value="黄">黄
+                </td></tr>
+                <tr><th>出身</th><td>
+                    <select name="prefecture">
+                        <?php
+                            foreach(["北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県", "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県", "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県", "三重県", "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県", "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"] as $value)
+                                echo "<option value=$value>$value</option>"
+                        ?>
+                    </select>
+                </td></tr>
+                <tr><th>コメント</th><td><textarea name="comment" rows="5" cols="50"></textarea></td></tr>
+            </table>
+            <input type="submit">
+            <input type="reset">
+        </form>
+    </body>
+</html>
+```
 
 
 
-PHPスクリプト
+受信PHPスクリプト
 
-[![img](4_test.assets/lesson4-A-22.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/lesson4-A-21.png)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+<?php
 
+// データベース接続
+require('db_connect.php');
 
+// SQL文の実行
+$sql = sprintf('INSERT INTO member SET name="%s", sex="%s", color="%s", pref="%s", comment="%s"',
+    sanitize($db, $_POST['name']),
+    sanitize($db, $_POST['sex']),
+    sanitize($db, $_POST['color']),
+    sanitize($db, $_POST['pref']),
+    sanitize($db, $_POST['comment']),
+);
 
-------
+echo '<p>データを登録しました。</p>';
 
-* [←問題へ戻る](http://cs-tklab.na-inet.jp/phpdb/Chapter4/lesson4.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
+// MySQLサーバ接続終了
+mysqli_close($db);
 
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.
+?>
+</body>
+</html>
+```
+

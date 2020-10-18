@@ -1,7 +1,3 @@
-* [←ファイルメニューとチェックボックスの受け取り](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP4.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [if文→](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP6.html)
-
 # PHPとJavaScriptによるフォームの生成
 
 ------
@@ -18,7 +14,23 @@ PHPの制御文をうまく使うことで，面倒なHTMLフォームの生成�
 
 PHPスクリプト
 
-[![img](5_form_generate.assets/PHP5-1.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/PHP5-1.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>セレクトメニュー自動生成</title>
+</head>
+<body>
+    <select name="sample">
+    <?php for($i = 1; $i < 50; $i++) { ?>
+        <option value="<?=$i?>"><?=$i?></option>
+    <?php } ?>
+    </select>
+    <p><a href="index.html">インデックスに戻る</a></p>
+</body>
+</html>
+```
 
 
 
@@ -56,7 +68,37 @@ HTMLとしての表示は，printを使い，変数`$i`だけを`'...'`から外
 
 JavaScript入りHTMLファイル(PHPファイルでも可)
 
-[![img](5_form_generate.assets/selectmenu_javascript.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/selectmenu_javascript.png)
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>セレクトメニュー自動生成(JavaScript ver)</title>
+</head>
+<body>
+  <script>
+    // Create <select> elements
+    var select50 = document.createElement('select')
+
+    // Create 50 pieces of <option>
+    for(var i = 1; i <= 50; i++) {
+      var option_element = document.createElement('option')
+      option_element.innerHTML = ` ${i} `
+      option_element.value = i
+
+      // Add <option> into <select>
+      select50.appendChild(option_element)
+    }
+
+    // Add <select> into <body>
+    document.body.appendChild(select50)
+  </script>
+  <p><a href="index.html">return to index</a></p>
+</body>
+</html>
+```
+
+
 
 ブラウザ画面はPHPと同じになりますので省略します。先生役の人はPHP版とどこが異なるのかを解説しましょう。(ブラウザからソースを見せると分かりやすい。）
 
@@ -64,7 +106,29 @@ JavaScript入りHTMLファイル(PHPファイルでも可)
 
 プログラム
 
-[![img](5_form_generate.assets/selectmenu_array_php.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/selectmenu_array_php.png)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>配列によるセレクトの自動生成</title>
+</head>
+<body>
+    <select name="sample">
+    <?php
+        // Declare array
+        $sampleArray = array('choose 1', 'choose 2', 'choose 3', 'choose 4');
+        foreach($sampleArray as $value) {
+    ?>
+        <option value="<?=$value?>"><?=$value?></option>
+    <?php } ?>
+    </select>
+    <p><a href="index.html">インデックスに戻る</a></p>
+</body>
+</html>
+```
+
+
 
 
 
@@ -95,7 +159,11 @@ foreach (配列名 as インデックス => 値){
 
 インデックスを使用しない上記のようなケースは，`<インデックス => 値`の部分を省略して`値`だけを代入するように書くこともできます。例えば上記の例では17行目を下記のように書くことができます。
 
-[![img](5_form_generate.assets/selectmenu_array2_php_l16-18.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/selectmenu_array2_php_l16-18.png)
+```php
+// 配列インデックス取得なし
+foreach($sampleArray as $value)
+  print('<option value="'. $value . '">' . $value . '</option>');
+```
 
 
 
@@ -105,15 +173,39 @@ JavaScriptで配列を作り，その要素から動的にリストメニュー�
 
 JavaScript入りHTMLファイル(PHPファイルでも可)
 
-[![img](5_form_generate.assets/selectmenu_array_javascript.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/selectmenu_array_javascript.png)
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>配列によるセレクトメニュー自動生成(JavaScript ver)</title>
+</head>
+<body>
+  <script>
+    // Create <select> element
+    var select = document.createElement('select')
+    select.name = 'sample'
+
+    // Declare array
+    var sampleArray = ['choose 1', 'choose 2', 'choose 3', 'choose 4']
+
+    // Create <option> elements
+    sampleArray.forEach(function(value) {
+      var option = document.createElement('option')
+      option.innerHTML = value
+      option.value = value
+
+      // add <option> into <select>
+      select.appendChild(option)
+    })
+    // add <select> into <body>
+    document.body.appendChild(select)
+  </script>
+  <p><a href="index.html">return to index</a></p>
+</body>
+</html>
+```
+
+
 
 ブラウザ画面はPHPと同じになりますので省略します。先生役の人はPHP版とどこが異なるのかを解説しましょう。
-
-------
-
-* [←ファイルメニューとチェックボックスの受け取り](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP4.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [if文→](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP6.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

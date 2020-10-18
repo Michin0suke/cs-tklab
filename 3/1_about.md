@@ -1,6 +1,3 @@
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [新規データベースの作成→](http://cs-tklab.na-inet.jp/phpdb/Chapter3/DB2.html)
-
 # データベース
 
 ------
@@ -82,11 +79,3 @@ phpMyAdminはMySQLを利用するユーザの多くが利用している代表�
    
 
 以降ではこのphpMyAdminを通じてSQL文の基本と学びつつMySQLサーバを操作していきます。
-
-------
-
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [新規データベースの作成→](http://cs-tklab.na-inet.jp/phpdb/Chapter3/DB2.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

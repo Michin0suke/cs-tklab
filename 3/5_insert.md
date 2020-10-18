@@ -1,7 +1,3 @@
-* [←データ型の説明](http://cs-tklab.na-inet.jp/phpdb/Chapter3/DB4.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [練習問題→](http://cs-tklab.na-inet.jp/phpdb/Chapter3/lesson3.html)
-
 # データの挿入・変更・消去・検索
 
 ------
@@ -30,25 +26,7 @@
 
 2. 最初に
 
-   ```
-   id = 1
-   ```
-
-   ,
-
-    
-
-   ```
-   name = "生物1"
-   ```
-
-   を
-
-   ```
-   test_tbl
-   ```
-
-   に挿入してみましょう。idの値に1を，nameの値に生物1と入力し，右下の「実行」ボタンをクリックします。
+   `id = 1`, `name = "生物1"`を`test_tbl`に挿入してみましょう。idの値に1を，nameの値に生物1と入力し，右下の「実行」ボタンをクリックします。
 
    [![img](5_insert.assets/test_db_test_tbl_insert1.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter3/fig/test_db_test_tbl_insert1.png)
 
@@ -60,21 +38,7 @@
 
    [![img](5_insert.assets/test_db_test_tbl_insert1_after2.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter3/fig/test_db_test_tbl_insert1_after2.png)
 
-5. 一通り動いたら，同様の手順で2行目の
-
-   ```
-   id = 2
-   ```
-
-   ,
-
-    
-
-   ```
-   name = "生物2"
-   ```
-
-   も挿入してみて下さい。実行後は下記のように2行分の値があることを確認して下さい。
+5. 一通り動いたら，同様の手順で2行目の`id = 2`, `name = "生物2"`も挿入してみて下さい。実行後は下記のように2行分の値があることを確認して下さい。
 
    [![img](5_insert.assets/test_db_test_tbl_insert2.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter3/fig/test_db_test_tbl_insert2.png)
 
@@ -227,12 +191,3 @@ SELECT命令に条件を追加することで，必要なデータの必要な�
 [![img](http://cs-tklab.na-inet.jp/phpdb/Chapter3/fig/DB5-17.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter3/fig/DB5-17.PNG)
 
 SELECT命令の場合，他のSQL命令とは異なり，カラム名を先に指定するので順番には注意しましょう。全てのカラムを指定する時は，`*(アスタリスク)`を使います。
-
-------
-
-* [←データ型の説明](http://cs-tklab.na-inet.jp/phpdb/Chapter3/DB4.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [練習問題→](http://cs-tklab.na-inet.jp/phpdb/Chapter3/lesson3.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

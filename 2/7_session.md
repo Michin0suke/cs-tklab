@@ -1,7 +1,3 @@
-* [←if文](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP6.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [練習問題→](http://cs-tklab.na-inet.jp/phpdb/Chapter2/lesson2.html)
-
 # セッション
 
 ------
@@ -27,7 +23,26 @@
 
 HTMLファイル：session_form.html
 
-[![img](7_session.assets/PHP7-1.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/PHP7-1.PNG)
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>セッション</title>
+</head>
+<body>
+  <form action="session_start.php" method="post">
+    <label>
+      継続内容:
+      <input type="text" name="word">
+    </label>
+    <input type="submit" value="submit">
+    <input type="reset" value="reset">
+  </form>
+  <p><a href="index.html">return to index</a></p>
+</body>
+</html>
+```
 
 
 
@@ -41,7 +56,23 @@ HTMLファイル：session_form.html
 
 PHPスクリプト：session_start.php
 
-[![img](7_session.assets/PHP7-2.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/PHP7-2.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>セッション2</title>
+</head>
+<body>
+    <?php session_start() ?>
+    <p>セッションスタート</p>
+    <?php $_SESSION['word'] = htmlspecialchars($_POST['word'], ENT_QUOTES) ?>
+    <p>現在の継続情報は[ <?=$_SESSION['word']?> ]と登録されています。</p>
+
+    <p><a href="session_follow.php">継続の確認</a></p>
+</body>
+</html>
+```
 
 
 
@@ -59,7 +90,24 @@ PHPスクリプト：session_start.php
 
 PHPスクリプト：session_follow.php
 
-[![img](7_session.assets/PHP7-3.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/PHP7-3.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>セッション3</title>
+</head>
+<body>
+    <?php session_start() ?>
+    <p>セッション継続中です。</p>
+    <p>現在の継続情報は[ <?=$_SESSION['word']?> ]と登録されています。</p>
+
+    <p><a href="session_end.php">セッション終了へ</a></p>
+</body>
+</html>
+```
+
+
 
 
 
@@ -79,21 +127,27 @@ PHPスクリプト：session_follow.php
 
 PHPスクリプト：session_end.php
 
-[![img](7_session.assets/PHP7-4.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/PHP7-4.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>セッション4</title>
+</head>
+<body>
+    <?php
+        session_start();
+        session_unset();
+    ?>
+    <p>現在の継続情報を終了しました。</p>
+</body>
+</html>
+```
+
+
 
 
 
 画面の表示
 
 [![img](7_session.assets/image7-4.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/image7-4.PNG)
-
-
-
-------
-
-* [←if文](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP6.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [練習問題→](http://cs-tklab.na-inet.jp/phpdb/Chapter2/lesson2.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

@@ -1,7 +1,3 @@
-* [←PHPとMySQLのリンク](http://cs-tklab.na-inet.jp/phpdb/Chapter4/link1.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [データベース接続の共通化→](http://cs-tklab.na-inet.jp/phpdb/Chapter4/link3.html)
-
 # mysqli_query:SQL文の実行
 
 ------
@@ -32,7 +28,32 @@ INSERT INTO animal SET id=4, name="クジラ", size=2000
 
 PHPスクリプト: insert1.php
 
-[![img](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/link2-1.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/link2-1.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+    <?php
+    // MySQLサーバ接続
+    $db = mysqli_connect('localhost', 'root', '', 'test_db') or die('MySQLサーバに繋がりません。');
+    echo 'サーバー接続&データベース接続完了';
+
+    // 文字コードをUTF-8にセット
+    mysqli_set_charset($db, 'utf8'); // 'utf-8'ではダメ
+    
+    // SQL文の実行
+    mysqli_query($db, 'INSERT INTO animal SET id=4, name="クジラ", size=2000') or die(mysqli_error($db));
+    echo 'データを挿入しました。';
+
+    //MySQLサーバ接続終了
+    mysqli_close($db);
+    ?>
+</body>
+</html>
+```
 
 
 
@@ -60,7 +81,34 @@ PHPスクリプト: insert1.php
 
 PHPスクリプト: insert.php
 
-[![img](2_sql.assets/link2-4.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/link2-4.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+    <?php
+    // MySQLサーバ接続
+    $db = mysqli_connect('localhost', 'root', '', 'test_db') or die('MySQLサーバに繋がりません。');
+    echo 'サーバー接続&データベース接続完了';
+
+    // 文字コードをUTF-8にセット
+    mysqli_set_charset($db, 'utf8'); // 'utf-8'ではダメ
+    
+    // SQL文の実行
+    mysqli_query($db, 'INSERT INTO animal SET id=5, name="ネコ", size=200') or die(mysqli_error($db));
+    echo 'データを挿入しました。';
+
+    //MySQLサーバ接続終了
+    mysqli_close($db);
+    ?>
+</body>
+</html>
+```
+
+
 
 
 
@@ -84,7 +132,32 @@ phpMyAdmin画面
 
 PHPスクリプト: update.php
 
-[![img](2_sql.assets/link2-7.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/link2-7.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+    <?php
+    // MySQLサーバ接続
+    $db = mysqli_connect('localhost', 'root', '', 'test_db') or die('MySQLサーバに繋がりません。');
+    echo 'サーバー接続&データベース接続完了';
+
+    // 文字コードをUTF-8にセット
+    mysqli_set_charset($db, 'utf8'); // 'utf-8'ではダメ
+    
+    // SQL文の実行
+    mysqli_query($db, 'UPDATE animal SET name="イヌ" WHERE id=5') or die(mysqli_error($db));
+    echo 'データを変更しました。';
+
+    //MySQLサーバ接続終了
+    mysqli_close($db);
+    ?>
+</body>
+</html>
+```
 
 
 
@@ -108,7 +181,34 @@ phpMyAdmin画面
 
 PHPスクリプト: delete.php
 
-[![img](2_sql.assets/link2-10.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/link2-10.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+    <?php
+    // MySQLサーバ接続
+    $db = mysqli_connect('localhost', 'root', '', 'test_db') or die('MySQLサーバに繋がりません。');
+    echo 'サーバー接続&データベース接続完了';
+
+    // 文字コードをUTF-8にセット
+    mysqli_set_charset($db, 'utf8'); // 'utf-8'ではダメ
+    
+    // SQL文の実行
+    mysqli_query($db, 'DELETE FROM animal WHERE id=5') or die(mysqli_error($db));
+    echo 'データを削除しました。';
+
+    //MySQLサーバ接続終了
+    mysqli_close($db);
+    ?>
+</body>
+</html>
+```
+
+
 
 
 
@@ -142,7 +242,39 @@ SELECT命令を実行した結果を取り出すには`mysqli_fetch関数グル�
 
 PHPスクリプト: select1.php
 
-[![img](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/link2-13.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/link2-13.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+    <?php
+    // MySQLサーバ接続
+    $db = mysqli_connect('localhost', 'root', '', 'test_db') or die('MySQLサーバに繋がりません。');
+    echo 'サーバー接続&データベース接続完了';
+
+    // 文字コードをUTF-8にセット
+    mysqli_set_charset($db, 'utf8'); // 'utf-8'ではダメ
+    
+    // SQL文の実行
+    $recordSet = mysqli_query($db, 'SELECT * FROM animal') or die(mysqli_error($db));
+    
+    // データの取り出し
+    $data = mysqli_fetch_assoc($recordSet);
+
+    // データの表示
+    echo $data['id'];
+    echo ', ';
+    echo $data['name'];
+
+    //MySQLサーバ接続終了
+    mysqli_close($db);
+    ?>
+</body>
+</html>
+```
 
 
 
@@ -178,7 +310,46 @@ SELECTは条件にあてはまるものをすべて表示させるのが正し�
 
 PHPスクリプト: select2.php
 
-[![img](2_sql.assets/link2-16.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/link2-16.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+    <?php
+    // MySQLサーバ接続
+    $db = mysqli_connect('localhost', 'root', '', 'test_db') or die('MySQLサーバに繋がりません。');
+    echo 'サーバー接続&データベース接続完了';
+
+    // 文字コードをUTF-8にセット
+    mysqli_set_charset($db, 'utf8'); // 'utf-8'ではダメ
+    
+    // SQL文の実行
+    $recordSet = mysqli_query($db, 'SELECT * FROM animal') or die(mysqli_error($db));
+    
+    // データの取り出しと表示
+    $data = mysqli_fetch_assoc($recordSet);
+    echo $data['id'];
+    echo ', ';
+    echo $data['name'];
+
+    // 改行
+    echo '<br>';
+
+    // データの取り出しと表示(2)
+    $data = mysqli_fetch_assoc($recordSet);
+    echo $data['id'];
+    echo ', ';
+    echo $data['name'];
+
+    //MySQLサーバ接続終了
+    mysqli_close($db);
+    ?>
+</body>
+</html>
+```
 
 
 
@@ -198,21 +369,46 @@ PHPスクリプト: select2.php
 
 PHPスクリプト: select.php
 
-[![img](2_sql.assets/link2-18.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/link2-18.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+    <?php
+    // MySQLサーバ接続
+    $db = mysqli_connect('localhost', 'root', '', 'test_db') or die('MySQLサーバに繋がりません。');
+    echo 'サーバー接続&データベース接続完了';
+
+    // 文字コードをUTF-8にセット
+    mysqli_set_charset($db, 'utf8'); // 'utf-8'ではダメ
+    
+    // SQL文の実行
+    $recordSet = mysqli_query($db, 'SELECT * FROM animal') or die(mysqli_error($db));
+    
+    // データの取り出しと表示(検索データ全て)
+    while($data = mysqli_fetch_assoc($recordSet)) {
+        echo $data['id'];
+        echo ', ';
+        echo $data['name'];
+
+        // 改行
+        echo '<br>';
+    }
+
+    //MySQLサーバ接続終了
+    mysqli_close($db);
+    ?>
+</body>
+</html>
+```
+
+
 
 
 
 実行結果
 
 [![img](2_sql.assets/link2-19.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/link2-19.PNG)
-
-
-
-------
-
-* [←PHPとMySQLのリンク](http://cs-tklab.na-inet.jp/phpdb/Chapter4/link1.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [データベース接続の共通化→](http://cs-tklab.na-inet.jp/phpdb/Chapter4/link3.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

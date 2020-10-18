@@ -1,6 +1,3 @@
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [SQL文の実行→](http://cs-tklab.na-inet.jp/phpdb/Chapter4/link2.html)
-
 # Webページとデータベースのリンク
 
 ------
@@ -27,7 +24,25 @@ mysqli Extensionのファンクションで最初に利用するのが，MySQL�
 
 PHPスクリプト
 
-[![img](1_link_php_to_mysql.assets/link1-1.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/link1-1.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+    <?php
+    // MySQLサーバ接続
+    $db = mysqli_connect('localhost', 'root', '') or die('MySQLサーバに繋がりません。');
+    echo 'サーバー接続完了';
+    
+    //MySQLサーバ接続終了
+    mysqli_close($db);
+    ?>
+</body>
+</html>
+```
 
 
 
@@ -71,7 +86,25 @@ MySQLサーバーに接続した後にやることは，データベースへの
 
 PHPスクリプト
 
-[![img](1_link_php_to_mysql.assets/link1-3.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/link1-3.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+    <?php
+    // MySQLサーバ接続
+    $db = mysqli_connect('localhost', 'root', '', 'test_db') or die('MySQLサーバに繋がりません。');
+    echo 'サーバー接続&データベース接続完了';
+    
+    //MySQLサーバ接続終了
+    mysqli_close($db);
+    ?>
+</body>
+</html>
+```
 
 
 
@@ -93,7 +126,30 @@ MySQLサーバに接続した後でデータの入出力を行う際には，同
 
 PHPスクリプト
 
-[![img](1_link_php_to_mysql.assets/link1-5.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/link1-5.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+    <?php
+    // MySQLサーバ接続
+    $db = mysqli_connect('localhost', 'root', '', 'test_db') or die('MySQLサーバに繋がりません。');
+    echo 'サーバー接続&データベース接続完了';
+
+    // 文字コードをUTF-8にセット
+    mysqli_set_charset($db, 'utf8'); // 'utf-8'ではダメ
+    echo '<br>';
+    echo '文字コード設定完了';
+    
+    //MySQLサーバ接続終了
+    mysqli_close($db);
+    ?>
+</body>
+</html>
+```
 
 
 
@@ -108,11 +164,3 @@ mysqli_set_charsetはMySQLサーバとの入出力全般に対する文字コー
 ## 完成
 
 ここまで入力が完了すればMySQLサーバに存在するデータベースと接続するためのPHPスクリプトは完成です。動作確認表示用のecho表示は消しておいて下さい。
-
-------
-
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [SQL文の実行→](http://cs-tklab.na-inet.jp/phpdb/Chapter4/link2.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

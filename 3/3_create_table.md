@@ -1,7 +1,3 @@
-* [←新規データベースの作成](http://cs-tklab.na-inet.jp/phpdb/Chapter3/DB2.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [データ型の説明→](http://cs-tklab.na-inet.jp/phpdb/Chapter3/DB4.html)
-
 # テーブルの作成:CREATE
 
 ------
@@ -120,12 +116,3 @@ phpMyAdminの操作だけでデータベースもテーブルも作成できる�
 4. 実行後は構造の欄をクリックして確認してみましょう。新しく作ったテーブルが増えているはずです。新しく作ったテーブルをクリックし，カラムの設定が正しいかどうか確認しましょう。
 
    [![img](3_create_table.assets/test_db_create_animal_test_tbl.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter3/fig/test_db_create_animal_test_tbl.png)
-
-------
-
-* [←新規データベースの作成](http://cs-tklab.na-inet.jp/phpdb/Chapter3/DB2.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [データ型の説明→](http://cs-tklab.na-inet.jp/phpdb/Chapter3/DB4.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

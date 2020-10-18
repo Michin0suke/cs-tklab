@@ -1,7 +1,3 @@
-* [←PHPによるフォームの生成](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP5.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [セッション→](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP7.html)
-
 # if文
 
 ------
@@ -12,13 +8,51 @@
 
 HTMLファイル：radio.html
 
-[![img](6_if.assets/PHP6-1.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/PHP6-1.PNG)
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>if文サンプル</title>
+</head>
+<body>
+    <form action="radio.php" method="post">
+        <input type="radio" name="sample" value="1">①
+        <input type="radio" name="sample" value="2">②
+        <br>
+        <input type="submit" value="submit">
+        <input type="reset" value="reset">
+    </form>
+    <p><a href="index.html">インデックスに戻る</a></p>
+</body>
+</html>
+```
+
+
 
 
 
 PHPスクリプト：radio.php
 
-[![img](6_if.assets/PHP6-2.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/PHP6-2.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>if文受け取り</title>
+</head>
+<body>
+    <?php $number = htmlspecialchars($_POST['sample'], ENT_QUOTES); ?>
+    <p>あなたが選択したのは<?=$number?>です。</p>
+
+    <?php if($number == 1): ?> <p>今日はいい天気ですか？</p>
+    <?php else: ?> <p>今日の朝食は何を食べましたか？</p>
+    <?php endif; ?>
+
+    <p><a href="index.html">インデックスに戻る</a></p>
+</body>
+</html>
+```
 
 
 
@@ -54,7 +88,24 @@ PHPスクリプト：radio.php
 
 HTMLファイル：input.html
 
-[![img](6_if.assets/PHP6-6.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/PHP6-6.PNG)
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>未入力感知</title>
+</head>
+<body>
+  <form action="input.php" method="post">
+    <p>何が入力されているか判断します: </p>
+    <input type="text" name="input" size="35" maxlength="255">
+    <input type="submit" value="submit">
+    <input type="reset" value="reset">
+  </form>
+  <p><a href="index.html">return to index</a></p>
+</body>
+</html>
+```
 
 
 
@@ -70,7 +121,26 @@ HTMLファイル：input.html
 
 PHPスクリプト：input.php
 
-[![img](6_if.assets/PHP6-7.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/PHP6-7.PNG)
+``` php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>未入力検知</title>
+</head>
+<body>
+    <?php
+        $sample = htmlspecialchars($_POST['input'], ENT_QUOTES);
+        if(empty($sample)):
+    ?>
+        <p>何も入力されていません。</p>
+    <?php else: ?>
+        <p><?=$sample?>が入力されています。</p>
+    <?php endif; ?>
+    <p><a href="index.html">インデックスに戻る</a></p>
+</body>
+</html>
+```
 
 
 
@@ -94,7 +164,24 @@ ifの条件文にempty関数を使うことで，変数が空であるかない�
 
 HTMLファイル：number.html
 
-[![img](6_if.assets/PHP6-8.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/PHP6-8.PNG)
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>数字であるかどうか</title>
+</head>
+<body>
+  <form action="number.php" method="post">
+    <p>数字であるか判断します: </p>
+    <input type="text" name="number" size="5" maxlength="255">
+    <input type="submit" value="submit">
+    <input type="reset" value="reset">
+  </form>
+  <p><a href="index.html">return to index</a></p>
+</body>
+</html>
+```
 
 
 
@@ -112,7 +199,24 @@ HTMLファイル：number.html
 
 PHPスクリプト：number.php
 
-[![img](6_if.assets/PHP6-9.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/PHP6-9.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>未入力検知</title>
+</head>
+<body>
+    <?php $number = htmlspecialchars($_POST['number'], ENT_QUOTES); ?>
+    <?php if(is_numeric($number)): ?>
+        <p><?=$number?>が入力されています。</p>
+    <?php else: ?>
+        <p>入力が数字ではありません。</p>
+    <?php endif; ?>
+    <p><a href="index.html">インデックスに戻る</a></p>
+</body>
+</html>
+```
 
 
 
@@ -143,7 +247,25 @@ PHPでは`preg_match関数`を使うことで，指定した正規表現によ�
 
 htmlファイル：regular.html
 
-[![img](6_if.assets/PHP6-10.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/PHP6-10.PNG)
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>正規表現</title>
+</head>
+<body>
+  <form action="regular.php" method="post">
+    <p>携帯電話の形式で入力してください: </p>
+    <p>例: 000-0000-0000</p>
+    <input type="text" name="zip" size="20" maxlength="13">
+    <input type="submit" value="submit">
+    <input type="reset" value="reset">
+  </form>
+  <p><a href="index.html">return to index</a></p>
+</body>
+</html>
+```
 
 
 
@@ -157,7 +279,24 @@ htmlファイル：regular.html
 
 プログラム：regular.php
 
-[![img](6_if.assets/PHP6-11.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/PHP6-11.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>正規表現</title>
+</head>
+<body>
+    <?php $zip = htmlspecialchars($_POST['zip'], ENT_QUOTES); ?>
+    <?php if(preg_match('/\A\d{3}\-\d{4}\-\d{4}\z/', $zip)): ?>
+        <p>登録番号は、<?=$zip?>です。</p>
+    <?php else: ?>
+        <p>指定した形式で入力してください。</p>
+    <?php endif; ?>
+    <p><a href="index.html">インデックスに戻る</a></p>
+</body>
+</html>
+```
 
 
 
@@ -186,7 +325,44 @@ PHPスクリプトはサーバーサイド，つまり，Webサーバ側で実�
 
 javascript_output.php
 
-[![img](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/javascript_output_php.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter2/fig/javascript_output_php.png)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>JavaScript & PHP</title>
+    <!-- JavaScript -->
+    <script>
+        function output1() {
+            var output = document.getElementById('output1');
+            output.innerHTML = 'This is first JavaScript function.';
+        }
+        function output2() {
+            var output = document.getElementById('output2');
+            output.innerHTML = 'This is second JavaScript function.';
+        }
+    </script>
+</head>
+<body>
+    <h1>PHP & JavaScript</h1>
+    <ul>
+        <li>Output1: <span id="output1"></span></li>
+        <li>Output2: <span id="output2"></span></li>
+    </ul>
+
+    <!-- PHPでJavaScriptの実行を制御 -->
+    <?php
+        // True...execute, False...not execute
+        $runOutput1 = True;
+        $runOutput2 = True;
+    ?>
+    <?php if($runOutput1): ?> <script>output1()</script> <?php endif?>
+    <?php if($runOutput2): ?> <script>output2()</script> <?php endif?>
+</body>
+</html>
+```
+
+
 
 
 
@@ -219,12 +395,3 @@ $run_output1 = 0, $run_output2 = 1の時
 
 
 現代のWebアプリケーションでは，サーバ側で実行されるプログラムと，ブラウザ側で実行させるスクリプトでそれぞれ役割分担を行っています。処理内容に応じてPHPとJavaScriptの組み合わせが自在にできるよう，精進していきましょう。
-
-------
-
-* [←PHPによるフォームの生成](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP5.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [セッション→](http://cs-tklab.na-inet.jp/phpdb/Chapter2/PHP7.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.

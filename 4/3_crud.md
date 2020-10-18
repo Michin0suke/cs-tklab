@@ -1,7 +1,3 @@
-* [←SQL文の実行](http://cs-tklab.na-inet.jp/phpdb/Chapter4/link2.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [練習問題→](http://cs-tklab.na-inet.jp/phpdb/Chapter4/lesson4.html)
-
 # データベース接続の共通化とCRUDシステムの完成
 
 ------
@@ -20,7 +16,16 @@ Webアプリケーションシステムを制作する際にはデータベー�
 
 PHPスクリプト：dbconnect.php
 
-[![img](3_crud.assets/link3-1.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/link3-1.PNG)
+```php
+<?php
+// MySQLサーバ接続&データベース選択
+$db = mysqli_connect('localhost', 'root', '', 'test_db') or die('MySQLサーバに繋がりません！');
+
+// 文字コードをUTF-8にセット
+mysqli_set_charset($db, 'utf8'); // 'utf-8'ではダメ
+```
+
+
 
 
 
@@ -38,7 +43,38 @@ require('dbconnect.php');
 
 PHPスクリプト: select.php
 
-[![img](3_crud.assets/link3-2.PNG)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/link3-2.PNG)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+    <?php
+    // データベース接続処理
+    require('dbconnect.php');
+    
+    
+    // SQL文の実行
+    $recordSet = mysqli_query($db, 'SELECT * FROM animal') or die(mysqli_error($db));
+    
+    // データの取り出しと表示(検索データ全て)
+    while($data = mysqli_fetch_assoc($recordSet)) {
+        echo $data['id'];
+        echo ', ';
+        echo $data['name'];
+
+        // 改行
+        echo '<br>';
+    }
+
+    //MySQLサーバ接続終了
+    mysqli_close($db);
+    ?>
+</body>
+</html>
+```
 
 
 
@@ -66,6 +102,15 @@ PHPスクリプト: select.php
 では最初に，htdocsフォルダに`minicrud`フォルダを作り，そこに今まで作ってきたPHPスクリプト(select.php, insert.php, delete.php, update.php, dbconnect.php)一式をコピーしておきます。以降はこのコピーしたファイルに手を加えていきます。
 
 次に，minicrudフォルダにindex.htmlを作り，同じフォルダにあるselect.phpへのリンクを追加します。
+
+```html
+<a href="insert.php">Create</a><br>
+<a href="select.php">Read</a><br>
+<a href="update.php">Update</a><br>
+<a href="delete.php">Delete</a>
+```
+
+
 
 index.htmlの例
 
@@ -104,6 +149,59 @@ index.htmlの例
 
 PHPスクリプト: insert.phpを改良
 
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+    <form method="post">
+        <p>動物の名前: <input name="name" type="text" size="10"></p>
+        <p>サイズ:    <input name="size" type="text" size="10">(数値)</p>
+        <p>メモ:    <input name="memo" type="text" size="20"></p>
+        <br>
+        <input type="submit" value="追加">
+        <input type="reset" value="リセット">
+    </form>
+    <a href="/"><button>ホームに戻る</button></a>
+<?php
+
+// 入力データが存在しない場合、以降の処理を行わない。
+if(empty($_POST['name']) || empty($_POST['size']) || empty($_POST['memo'])){
+    exit();
+}
+
+// サニタイズ
+$name = htmlspecialchars($_POST['name'], ENT_QUOTES);
+$size = htmlspecialchars($_POST['size'], ENT_QUOTES);
+$memo = htmlspecialchars($_POST['memo'], ENT_QUOTES);
+
+// データベース接続
+require('db_connect.php');
+
+// SQL文の実行
+$sql = sprintf('INSERT INTO animal SET name="%s", size=%d, memo="%s"',
+    mysqli_real_escape_string($db, $name),
+    mysqli_real_escape_string($db, $size),
+    mysqli_real_escape_string($db, $memo)
+);
+// デバッグ用
+echo "<p>$sql<p>";
+mysqli_query($db, $sql) or die(mysqli_error($db));
+echo '<p>データを挿入しました。</p>';
+
+// MySQLサーバ接続終了
+mysqli_close($db);
+
+?>
+</body>
+</html>
+```
+
+
+
 [![img](3_crud.assets/insert2_form_php.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/insert2_form_php.png)
 
 
@@ -131,7 +229,18 @@ PHPスクリプト: insert.phpを改良
 
 PHPスクリプト: dbconnect.phpを改良
 
-[![img](3_crud.assets/dbconnect_sanitize.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/dbconnect_sanitize.png)
+```php
+<?php
+// MySQLサーバ接続&データベース選択
+$db = mysqli_connect('localhost', 'root', '', 'animal') or die('MySQLサーバに繋がりません！');
+
+// 文字コードをUTF-8にセット
+mysqli_set_charset($db, 'utf8'); // 'utf-8'ではダメ
+
+function sanitize($db, $input) {
+    return mysqli_real_escape_string($db, htmlspecialchars($input, ENT_QUOTES));
+}
+```
 
 
 
@@ -141,7 +250,51 @@ PHPスクリプト: dbconnect.phpを改良
 
 PHPスクリプト: insert.phpを再改良
 
-[![img](3_crud.assets/insert_sanitize.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/insert_sanitize.png)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+    <form method="post">
+        <p>動物の名前: <input name="name" type="text" size="10"></p>
+        <p>サイズ:    <input name="size" type="text" size="10">(数値)</p>
+        <p>メモ:    <input name="memo" type="text" size="20"></p>
+        <br>
+        <input type="submit" value="追加">
+        <input type="reset" value="リセット">
+    </form>
+    <a href="/"><button>ホームに戻る</button></a>
+<?php
+
+// 入力データが存在しない場合、以降の処理を行わない。
+if(empty($_POST['name']) || empty($_POST['size']) || empty($_POST['memo'])){
+    exit();
+}
+
+// データベース接続
+require('db_connect.php');
+
+// SQL文の実行
+$sql = sprintf('INSERT INTO animal SET name="%s", size=%d, memo="%s"',
+    sanitize($db, $name),
+    sanitize($db, $size),
+    sanitize($db, $memo)
+);
+// デバッグ用
+echo "<p>$sql<p>";
+mysqli_query($db, $sql) or die(mysqli_error($db));
+echo '<p>データを挿入しました。</p>';
+
+// MySQLサーバ接続終了
+mysqli_close($db);
+
+?>
+</body>
+</html>
+```
 
 
 
@@ -171,7 +324,45 @@ select_delete.php完成イメージ
 
 PHPスクリプト: select_delete.php(改良部分のみ表示)
 
-[![img](3_crud.assets/select_delete_php.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/select_delete_php.png)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+<?php
+
+require('db_connect.php');
+
+if(empty($_POST)) {
+    // 最初にアクセスしたときに表示されるコンテンツ
+    $recordSet = mysqli_query($db, 'SELECT * FROM animal') or die(mysqli_error($db));
+    while($record = mysqli_fetch_assoc($recordSet)) { ?>
+
+        <form method="post">
+            <input type="submit" value="削除実行">
+            <input type="hidden" name="id" value="<?=$record['id']?>">
+            <span><?=$record['id']?>, <?=$record['name']?>, <?=$record['size']?>, <?=$record['memo']?></span>
+            <br>
+        </form>
+
+    <?php }
+} else {
+    // 削除ボタンを押したあとに表示されるコンテンツ
+    $id = sanitize($db, $_POST['id']);
+    mysqli_query($db, "DELETE FROM animal WHERE id = $id") or die(mysqli_error($db));
+    echo "削除しました。";
+}
+
+mysqli_close($db);
+
+?>
+<a href="/"><button>ホームに戻る</button></a>
+</body>
+</html>
+```
 
 
 
@@ -191,11 +382,55 @@ select_update.php完成イメージ
 
 削除と同様に，select.phpをコピーして`select_udpate.php`を作り，下記のようにwhileループ内を書き換えます。
 
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>データベースリンク</title>
+</head>
+<body>
+<?php
+
+require('db_connect.php');
+
+if(empty($_POST)) {
+    // 最初にアクセスしたときに表示されるコンテンツ
+    $recordSet = mysqli_query($db, 'SELECT * FROM animal') or die(mysqli_error($db));
+    while($record = mysqli_fetch_assoc($recordSet)) { ?>
+        <form method="post">
+            <input type="submit" value="更新実行">
+            <input type="hidden" name="id" value="<?=$record['id']?>">
+            <input type="text" name="name" value="<?=$record['name']?>">
+            <input type="text" name="size" value="<?=$record['size']?>">
+            <br>
+        </form>
+    <?php }
+} else {
+    // 更新ボタンを押したあとに表示されるコンテンツ
+    $id = sanitize($db, $_POST['id']);
+    $new_name = sanitize($db, $_POST['name']);
+    $new_size = sanitize($db, $_POST['size']);
+
+    $recordSet = mysqli_query($db, "SELECT * FROM animal WHERE id = $id") or die(mysqli_error($db));
+    $record = mysqli_fetch_assoc($recordSet);
+    $old_name = $record['name'];
+    $old_size = $record['size'];
+
+    mysqli_query($db, "UPDATE animal SET name = '$new_name', size = $new_size WHERE id = $id") or die(mysqli_error($db));
+
+    echo "<p>変更しました。</p>";
+    echo "<p>[ $id, $old_name, $old_size ] => [ $id, $new_name, $new_size ]</p><br>";
+    echo '<a href="/"><button>ホームに戻る</button></a>';
+}
 
 
-PHPスクリプト: select_update.php(改良部分のみ表示)
+mysqli_close($db);
 
-[![img](3_crud.assets/select_update_php.png)](http://cs-tklab.na-inet.jp/phpdb/Chapter4/fig/select_update_php.png)
+?>
+</body>
+</html>
+```
 
 
 
@@ -230,14 +465,3 @@ CRUD Webアプリ ファイル関係図
 * 削除データ選択&削除実行，更新データ選択＆更新実行の処理を一つのPHPスクリプトにまとめる。
 
 等がありますし，発展的に他のアプリに衣替えさせることも可能です。自由制作のアイディアづくりの土台として参考にして下さい。
-
-
-
-------
-
-* [←SQL文の実行](http://cs-tklab.na-inet.jp/phpdb/Chapter4/link2.html)
-* [ホーム](http://cs-tklab.na-inet.jp/phpdb/index.html)
-* [練習問題→](http://cs-tklab.na-inet.jp/phpdb/Chapter4/lesson4.html)
-
-Copyright (c) 2014-2017 幸谷研究室 @ 静岡理工科大学 All rights reserved.
-Copyright (c) 2014-2017 T.Kouya Laboratory @ Shizuoka Institute of Science and Technology. All rights reserved.
