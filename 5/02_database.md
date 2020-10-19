@@ -96,3 +96,15 @@ create table larning (id integer primary key auto_increment, member integer, nam
 create table task (id integer primary key auto_increment, member integer, name text, file text, change_name text, word text, modified date);
 ```
 
+
+
+SQLite
+
+```sqlite
+create table member (id integer primary key autoincrement, name text, pass_word text, mail text);
+
+create table learning (id integer primary key autoincrement, member integer, name text, file text, change_name text, created text);
+
+create table task (id integer primary key autoincrement, member integer, name text, file text, change_name text, word text, modified text);
+```
+
